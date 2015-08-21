@@ -7,28 +7,26 @@ function Send-Gist {
             $contents = Get-Content -Path $Path -Raw
         }
         
-        else {
+        elseif(!$psISE) {
             Write-Warning "$($Path) not found"
             break
         }
     }
 
-    else {
-        if($psISE) {
+    if($psISE) {
+        if (!$Path){
             $fileName = Split-Path -Leaf $psISE.CurrentFile.FullPath
+        }
+        else{
+            $fileName = $Path
+        }
 
-            if($psISE.CurrentFile.Editor.SelectedText) {
-                $contents = $psISE.CurrentFile.Editor.SelectedText
-            }
-
-            else {
-                $contents = $psISE.CurrentFile.Editor.Text
-            }
+        if($psISE.CurrentFile.Editor.SelectedText) {
+            $contents = $psISE.CurrentFile.Editor.SelectedText
         }
 
         else {
-            Write-Warning 'Using this function without the Path parameter only works in PowerShell ISE'
-            break
+            $contents = $psISE.CurrentFile.Editor.Text
         }
     }
 
