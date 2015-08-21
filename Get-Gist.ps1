@@ -3,17 +3,38 @@ function Get-Gist {
     param(
         [Parameter(Mandatory)]
         [string]$User,
-        [string]$FileName
+        [string]$FileName,
+        [switch]$clip,
+        [switch]$sendToISE
     )    
-
-    $(ForEach($gist in (Invoke-RestMethod -Headers (Get-GistAuthHeader) -Uri "https://api.github.com/users/$($User)/gists")) {
-
-        $GetFileName = {($gist.files| Get-Member -MemberType NoteProperty).Name}
-        [PSCustomObject]@{            
-            FileName = &$GetFileName
-            Url      = $gist.url
-            RawUrl   = ($gist.files).(&$GetFileName).raw_url
-            GistID   = Split-Path -Leaf $gist.url
+    $gists = Invoke-RestMethod -Headers (Get-GistAuthHeader) -Uri "https://api.github.com/users/$($User)/gists" 
+    foreach ($gist in $gists) {
+        $GistFileName = ($gist.files| Get-Member -MemberType NoteProperty).Name
+        if ($GistFileName -notmatch $FileName){
+            continue
         }
-    }) | Where-Object {$_.FileName -match $FileName}
+        $rawUrl = ($gist.files).($GistFileName).raw_url
+        $content = ''
+        if ($rawUrl){
+            $content = Invoke-RestMethod -Uri $RawUrl -Headers $Header
+            if ($clip){
+                $content | clip
+            }
+            if ($sendToISE){
+                $temp = "$env:TEMP\$GistFileName"
+                $content | Out-File -FilePath $temp
+                [void]$psise.CurrentPowerShellTab.Files.Add($temp)
+                del $temp -force
+            }
+        }
+        [PSCustomObject]@{            
+            FileName = $GistFileName
+            Url      = $gist.url
+            RawUrl   = $rawUrl
+            GistID   = Split-Path -Leaf $gist.url
+            Content = $content
+        }
+    }
+    
 }
+
