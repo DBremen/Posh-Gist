@@ -68,5 +68,6 @@ function Send-Gist {
 
     $resp = Invoke-RestMethod -Uri $Uri -Method $Method -Headers $Header -Body ($gist | ConvertTo-Json)
 
-    Start-Process $resp.'html_url'
+    $resp.'html_url' | clip
+    $resp.'html_url'
 }
