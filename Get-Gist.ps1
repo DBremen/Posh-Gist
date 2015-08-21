@@ -28,13 +28,13 @@ function Get-Gist {
             }
         }
         [PSCustomObject]@{            
-            FileName = $GistFileName
-            Url      = $gist.url
-            RawUrl   = $rawUrl
-            GistID   = Split-Path -Leaf $gist.url
-            Content = $content
+            FileName    = $GistFileName
+            Description = $gist.Description
+            Url         = $gist.url
+            RawUrl      = $rawUrl
+            GistID      = Split-Path -Leaf $gist.url
+            Content     = $content
         }
     }
     
 }
-
