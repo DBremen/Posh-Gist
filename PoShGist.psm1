@@ -3,6 +3,7 @@
 . (Join-Path $PSScriptRoot Get-GistContent.ps1)
 . (Join-Path $PSScriptRoot Send-Gist.ps1)
 . (Join-Path $PSScriptRoot Test-Gist.ps1)
+. (Join-Path $PSScriptRoot Remove-Gist.ps1)
 
 function Add-MenuItem {
     param([string]$DisplayName, $SB, $ShortCut)
@@ -17,3 +18,4 @@ function Add-MenuItem {
 }
 
 Add-MenuItem '_Send Gist' { Send-Gist } 'CTRL+Shift+S'
+Export-ModuleMember -Function Get-Gist, Send-Gist, Remove-Gist, Test-Git
